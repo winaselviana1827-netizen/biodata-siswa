@@ -15,7 +15,6 @@
   --teks-redup: #5b667a;
   --garis: #d6dde8;
   --aksen: #7f52b0;
-  --aksen-hover: #6b4397;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -25,7 +24,6 @@
     --teks-redup: #98a4ba;
     --garis: #2a3650;
     --aksen: #a855f7;
-    --aksen-hover: #9333ea;
   }
 }
 * { box-sizing: border-box; }
@@ -65,11 +63,9 @@ header p { margin: 0; color: var(--teks-redup); }
   border: 1px solid var(--garis);
   border-radius: 14px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 .pita { height: 56px; background: #7f52b0; }
-.isi { padding: 0 16px 16px; text-align: center; flex: 1; display: flex; flex-direction: column; }
+.isi { padding: 0 16px 16px; text-align: center; }
 .foto {
   width: 76px; height: 76px;
   margin: -38px auto 8px;
@@ -82,88 +78,22 @@ header p { margin: 0; color: var(--teks-redup); }
 .foto img { width: 100%; height: 100%; object-fit: cover; }
 .nama { margin: 0; font-size: 1.05rem; font-weight: 800; }
 .nis { margin: 0 0 12px; color: var(--teks-redup); font-size: 0.85rem; }
-.rincian { margin: 0 0 16px; text-align: left; font-size: 0.9rem; flex: 1; }
+.rincian { margin: 0; text-align: left; font-size: 0.9rem; }
 .rincian div {
   display: flex; justify-content: space-between; gap: 12px;
   padding: 6px 0; border-top: 1px solid var(--garis);
 }
 .rincian dt { color: var(--teks-redup); }
 .rincian dd { margin: 0; font-weight: 600; text-align: right; }
-.btn-edit {
-  width: 100%;
-  padding: 8px 12px;
-  background: var(--aksen);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: auto;
-}
-.btn-edit:hover { background: var(--aksen-hover); }
-
 .pesan { grid-column: 1 / -1; text-align: center; padding: 40px 16px; color: var(--teks-redup); }
 .pesan.galat { color: #b42318; }
-
-/* Modal Edit Styling */
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  place-items: center;
-  z-index: 100;
-  padding: 16px;
-}
-.modal.aktif { display: grid; }
-.modal-konten {
-  background: var(--kartu);
-  border: 1px solid var(--garis);
-  border-radius: 14px;
-  width: 100%;
-  max-width: 450px;
-  padding: 24px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-}
-.modal-konten h2 { margin-top: 0; margin-bottom: 16px; font-size: 1.3rem; }
-.form-grup { margin-bottom: 12px; text-align: left; }
-.form-grup label { display: block; font-size: 0.85rem; color: var(--teks-redup); margin-bottom: 4px; }
-.form-grup input, .form-grup select, .form-grup textarea {
-  width: 100%;
-  font: inherit;
-  color: var(--teks);
-  background: var(--bg);
-  border: 1px solid var(--garis);
-  border-radius: 8px;
-  padding: 8px 10px;
-}
-.modal-aksi { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
-.btn-batal {
-  background: transparent;
-  color: var(--teks-redup);
-  border: 1px solid var(--garis);
-  border-radius: 8px;
-  padding: 8px 16px;
-  cursor: pointer;
-}
-.btn-simpan {
-  background: var(--aksen);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 @media (prefers-color-scheme: dark) { .pesan.galat { color: #ff8b80; } }
 </style>
 </head>
 <body>
 <div class="wadah">
   <header>
-    <h1>Teknik Komputer dan Jaringan</h1>
+    <h1>Teknik Komputer dan Jaringan</h1></h1>
     <p>Cari berdasarkan role.</p>
   </header>
   <div class="kontrol">
@@ -174,47 +104,6 @@ header p { margin: 0; color: var(--teks-redup); }
   </div>
   <p id="jumlah" class="jumlah" aria-live="polite"></p>
   <main id="daftar" class="daftar"></main>
-</div>
-
-<!-- MODAL EDIT SISWA -->
-<div id="modalEdit" class="modal">
-  <div class="modal-konten">
-    <h2>Edit Data Siswa</h2>
-    <form id="formEdit">
-      <input type="hidden" id="editNisLama">
-      <div class="form-grup">
-        <label for="editNama">Nama Siswa</label>
-        <input type="text" id="editNama" required>
-      </div>
-      <div class="form-grup">
-        <label for="editKelas">Kelas</label>
-        <input type="text" id="editKelas" required>
-      </div>
-      <div class="form-grup">
-        <label for="editJenisKelamin">Jenis Kelamin</label>
-        <select id="editJenisKelamin">
-          <option value="L">Laki-laki (L)</option>
-          <option value="P">Perempuan (P)</option>
-        </select>
-      </div>
-      <div class="form-grup">
-        <label for="editTanggalLahir">Tanggal Lahir</label>
-        <input type="date" id="editTanggalLahir">
-      </div>
-      <div class="form-grup">
-        <label for="editAlamat">Alamat</label>
-        <textarea id="editAlamat" rows="2"></textarea>
-      </div>
-      <div class="form-grup">
-        <label for="editFotoUrl">URL Foto</label>
-        <input type="url" id="editFotoUrl" placeholder="https://...">
-      </div>
-      <div class="modal-aksi">
-        <button type="button" class="btn-batal" onclick="tutupModal()">Batal</button>
-        <button type="submit" class="btn-simpan">Simpan</button>
-      </div>
-    </form>
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -230,4 +119,124 @@ const TAMPILKAN = {
   foto_url: true
 };
 
-const db = supabase
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const elDaftar = document.getElementById("daftar");
+const elJumlah = document.getElementById("jumlah");
+const elCari = document.getElementById("cari");
+const elKelas = document.getElementById("filterKelas");
+let semuaSiswa = [];
+
+async function muatData() {
+  tampilkanPesan("Memuat data siswa...");
+  const { data, error } = await db
+    .from("siswa")
+    .select("nis, nama, kelas, jenis_kelamin, tanggal_lahir, alamat, foto_url")
+    .order("nama");
+
+  if (error) {
+    console.error("Detail Error:", error);
+    tampilkanPesan("Data tidak bisa dimuat. Periksa URL dan anon key, nama tabel, serta policy RLS di Supabase.", true);
+    return;
+  }
+  semuaSiswa = data;
+  isiPilihanKelas();
+  tampilkanSiswa();
+}
+
+function tampilkanSiswa() {
+  const kataKunci = elCari.value.trim().toLowerCase();
+  const kelasDipilih = elKelas.value;
+
+  const hasil = semuaSiswa.filter((s) => {
+    const cocokKelas = !kelasDipilih || s.kelas === kelasDipilih;
+    const cocokCari = !kataKunci || s.nama.toLowerCase().includes(kataKunci) || s.nis.toLowerCase().includes(kataKunci);
+    return cocokKelas && cocokCari;
+  });
+
+  elJumlah.textContent = hasil.length + " dari " + semuaSiswa.length + " siswa";
+  elDaftar.replaceChildren();
+
+  if (hasil.length === 0) {
+    tampilkanPesan(semuaSiswa.length === 0 ? "Belum ada data siswa. Tambahkan data lewat Table Editor di Supabase." : "Tidak ada siswa yang cocok. Coba kata kunci atau kelas lain.");
+    return;
+  }
+
+  hasil.forEach((s) => elDaftar.appendChild(buatKartu(s)));
+}
+
+function buatKartu(s) {
+  const kartu = el("article", "kartu");
+  kartu.appendChild(el("div", "pita"));
+  const isi = el("div", "isi");
+
+  const foto = el("div", "foto");
+  if (s.foto_url) {
+    const gambar = document.createElement("img");
+    gambar.src = s.foto_url;
+    gambar.alt = "Foto " + s.nama;
+    gambar.loading = "lazy";
+    gambar.onerror = () => foto.replaceChildren(document.createTextNode(inisial(s.nama)));
+    foto.appendChild(gambar);
+  } else {
+    foto.textContent = inisial(s.nama);
+  }
+
+  isi.appendChild(foto);
+  isi.appendChild(el("h2", "nama", s.nama));
+  isi.appendChild(el("p", "nis", "NIS " + s.nis));
+
+  const rincian = el("dl", "rincian");
+  tambahBaris(rincian, "Kelas", s.kelas);
+  if (TAMPILKAN.jenisKelamin) tambahBaris(rincian, "Jenis kelamin", s.jenis_kelamin);
+  if (TAMPILKAN.tanggalLahir) tambahBaris(rincian, "Tanggal lahir", formatTanggal(s.tanggal_lahir));
+  if (TAMPILKAN.alamat) tambahBaris(rincian, "Alamat", s.alamat);
+  
+  isi.appendChild(rincian);
+  kartu.appendChild(isi);
+  return kartu;
+}
+
+function el(tag, kelas, teks) {
+  const e = document.createElement(tag);
+  if (kelas) e.className = kelas;
+  if (teks) e.textContent = teks;
+  return e;
+}
+
+function tambahBaris(dl, label, nilai) {
+  if (!nilai) return;
+  const baris = el("div");
+  baris.appendChild(el("dt", "", label));
+  baris.appendChild(el("dd", "", nilai));
+  dl.appendChild(baris);
+}
+
+function inisial(nama) {
+  return nama.split(" ").filter(Boolean).slice(0, 2).map((k) => k[0].toUpperCase()).join("");
+}
+
+function formatTanggal(teks) {
+  if (!teks) return "";
+  return new Date(teks + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+}
+
+function tampilkanPesan(teks, galat) {
+  elDaftar.replaceChildren(el("p", "pesan" + (galat ? " galat" : ""), teks));
+}
+
+function isiPilihanKelas() {
+  const daftarKelas = [...new Set(semuaSiswa.map((s) => s.kelas).filter(Boolean))].sort();
+  daftarKelas.forEach((k) => {
+    const opsi = el("option", "", k);
+    opsi.value = k;
+    elKelas.appendChild(opsi);
+  });
+}
+
+elCari.addEventListener("input", tampilkanSiswa);
+elKelas.addEventListener("change", tampilkanSiswa);
+muatData();
+</script>
+</body>
+  </html>
