@@ -41,6 +41,19 @@ header p { margin: 0; color: var(--teks-redup); }
 .kontrol input, .kontrol select {
   font: inherit;
   color: var(--teks);
+  .btn-tambah {
+  background: var(--aksen);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.kontrol { display: flex; gap: 10px; flex-wrap: wrap; margin: 20px 0 8px; }
+.kontrol input, .kontrol select {
+  font: inherit;
+  color: var(--teks);
   background: var(--kartu);
   border: 1px solid var(--garis);
   border-radius: 10px;
@@ -63,7 +76,7 @@ header p { margin: 0; color: var(--teks-redup); }
   border: 1px solid var(--garis);
   border-radius: 14px;
   overflow: hidden;
-}
+  }
 .pita { height: 56px; background: #7f52b0; }
 .isi { padding: 0 16px 16px; text-align: center; }
 .foto {
@@ -88,22 +101,130 @@ header p { margin: 0; color: var(--teks-redup); }
 .pesan { grid-column: 1 / -1; text-align: center; padding: 40px 16px; color: var(--teks-redup); }
 .pesan.galat { color: #b42318; }
 @media (prefers-color-scheme: dark) { .pesan.galat { color: #ff8b80; } }
+  .modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  place-items: center;
+  padding: 16px;
+  z-index: 100;
+}
+.modal.aktif { display: grid; }
+.modal-konten {
+  background: var(--kartu);
+  border: 1px solid var(--garis);
+  padding: 24px;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 420px;
+}
+.modal-konten h2 { margin-top: 0; font-size: 1.25rem; }
+.modal-konten form { display: flex; flex-direction: column; gap: 12px; }
+.modal-konten label { font-size: 0.85rem; color: var(--teks-redup); display: flex; flex-direction: column; gap: 4px; }
+.modal-konten input, .modal-konten select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--garis);
+  background: var(--bg);
+  color: var(--teks);
+  font: inherit;
+}
+.modal-aksi { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.btn-batal { background: transparent; border: 1px solid var(--garis); color: var(--teks); padding: 8px 14px; border-radius: 8px; cursor: pointer; }
+.btn-simpan { background: var(--aksen); border: none; color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
 </style>
 </head>
 <body>
 <div class="wadah">
   <header>
+    <div>
     <h1>Teknik Komputer dan Jaringan</h1></h1>
     <p>Cari berdasarkan role.</p>
+    </div>
+    <button class="btn-tambah" onclick="bukanModal()">+ Tambah Data</button>button>
   </header>
-  <div class="kontrol">
+<div class="control">
     <input id="cari" type="search" placeholder="Cari nama atau NIS" aria-label="Cari nama atau NIS">
+    <select id="filterrole" aria-label="Filter role">
+      <option value="">Semua (Guru / Siswa)</option>
+      <option value="siswa">Siswa</option>
+      <option value="guru">Guru</option>
+    </select>
     <select id="filterKelas" aria-label="Filter kelas">
-      <option value="">Semua kelas</option>
+      <option value="">Semua kelas / mapel</option>
     </select>
   </div>
   <p id="jumlah" class="jumlah" aria-live="polite"></p>
   <main id="daftar" class="daftar"></main>
+</div>
+
+<div id="modalForm" class="modal">
+  <div class="modal-konten">
+    <h2>Tambah Data Baru</h2>
+    <form id="formTambah">
+      <label>
+        Role
+        <select id="inputRole" onchange="sesuaikanForm()">
+          <option value="siswa">Siswa</option>
+          <option value="guru">Guru</option>
+        </select>
+      </label>
+
+      <label>
+        Nama Lengkap
+        <input type="text" id="inputNama" required>
+      </label>
+
+      <label id="lblId">
+        NIS
+        <input type="text" id="inputId" required>
+      </label>
+
+      <div id="formSiswaKhusus">
+        <label>
+          Kelas
+          <input type="text" id="inputKelas" placeholder="Contoh: XI TKJ 1">
+        </label>
+        <label>
+          Jenis Kelamin
+          <select id="inputJK">
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </label>
+        <label>
+          Tanggal Lahir
+          <input type="date" id="inputTanggal">
+        </label>
+        <label>
+          Alamat
+          <input type="text" id="inputAlamat">
+        </label>
+      </div>
+
+      <div id="formGuruKhusus" style="display: none;">
+        <label>
+          Jurusan
+          <input type="text" id="inputJurusan" value="Teknik Komputer Jaringan">
+        </label>
+        <label>
+          Mata Pelajaran
+          <input type="text" id="inputMapel" placeholder="Contoh: Admin Jaringan">
+        </label>
+      </div>
+
+      <label>
+        URL Foto (Optional)
+        <input type="url" id="inputFoto" placeholder="https://...">
+      </label>
+
+      <div class="modal-aksi">
+        <button type="button" class="btn-batal" onclick="tutupModal()">Batal</button>
+        <button type="submit" class="btn-simpan">Simpan</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -119,46 +240,71 @@ const TAMPILKAN = {
   foto_url: true
 };
 
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const elDaftar = document.getElementById("daftar");
 const elJumlah = document.getElementById("jumlah");
 const elCari = document.getElementById("cari");
+const elRole = document.getElementById("filterRole");
 const elKelas = document.getElementById("filterKelas");
 let semuaSiswa = [];
 
 async function muatData() {
-  tampilkanPesan("Memuat data siswa...");
-  const { data, error } = await db
+  tampilkanPesan("Memuat data...");
+  let gabungan = [];
+
+  // Menggunakan select("*") agar aman mengambil seluruh kolom yang ada
+  const { data: dataSiswa, error: errSiswa } = await db
     .from("siswa")
-    .select("nis, nama, kelas, jenis_kelamin, tanggal_lahir, alamat, foto_url")
+    .select("*")
     .order("nama");
 
-  if (error) {
-    console.error("Detail Error:", error);
-    tampilkanPesan("Data tidak bisa dimuat. Periksa URL dan anon key, nama tabel, serta policy RLS di Supabase.", true);
-    return;
+  if (errSiswa) {
+    console.error("Error Siswa:", errSiswa.message);
+  } else if (dataSiswa) {
+    gabungan = gabungan.concat(dataSiswa.map(s => ({ ...s, role: "siswa" })));
   }
-  semuaSiswa = data;
+
+  try {
+    const { data: dataGuru, error: errGuru } = await db
+      .from("guru")
+      .select("*")
+      .order("nama");
+
+    if (errGuru) {
+      console.warn("Error Guru:", errGuru.message);
+    } else if (dataGuru) {
+      gabungan = gabungan.concat(dataGuru.map(g => ({ ...g, role: "guru" })));
+    }
+  } catch (e) {
+    console.warn("Tabel guru error:", e);
+  }
+
+  semuaSiswa = gabungan;
   isiPilihanKelas();
   tampilkanSiswa();
 }
 
 function tampilkanSiswa() {
   const kataKunci = elCari.value.trim().toLowerCase();
+  const roleDipilih = elRole ? elRole.value : "";
   const kelasDipilih = elKelas.value;
 
   const hasil = semuaSiswa.filter((s) => {
-    const cocokKelas = !kelasDipilih || s.kelas === kelasDipilih;
-    const cocokCari = !kataKunci || s.nama.toLowerCase().includes(kataKunci) || s.nis.toLowerCase().includes(kataKunci);
-    return cocokKelas && cocokCari;
+    const cocokRole = !roleDipilih || s.role === roleDipilih;
+    const cocokKelas = !kelasDipilih || s.kelas === kelasDipilih || s.mapel === kelasDipilih;
+    const nama = (s.nama || "").toLowerCase();
+    const id = (s.nis || s.nip || "").toLowerCase();
+    const cocokCari = !kataKunci || nama.includes(kataKunci) || id.includes(kataKunci);
+    
+    return cocokRole && cocokKelas && cocokCari;
   });
 
-  elJumlah.textContent = hasil.length + " dari " + semuaSiswa.length + " siswa";
+  elJumlah.textContent = hasil.length + " dari " + semuaSiswa.length + " data";
   elDaftar.replaceChildren();
 
   if (hasil.length === 0) {
-    tampilkanPesan(semuaSiswa.length === 0 ? "Belum ada data siswa. Tambahkan data lewat Table Editor di Supabase." : "Tidak ada siswa yang cocok. Coba kata kunci atau kelas lain.");
+    tampilkanPesan(semuaSiswa.length === 0 ? "Belum ada data." : "Tidak ada data yang cocok.");
     return;
   }
 
@@ -184,14 +330,20 @@ function buatKartu(s) {
 
   isi.appendChild(foto);
   isi.appendChild(el("h2", "nama", s.nama));
-  isi.appendChild(el("p", "nis", "NIS " + s.nis));
+  isi.appendChild(el("p", "nis", s.role === "guru" ? ("NIP " + (s.nip || "-")) : ("NIS " + (s.nis || "-"))));
 
   const rincian = el("dl", "rincian");
-  tambahBaris(rincian, "Kelas", s.kelas);
-  if (TAMPILKAN.jenisKelamin) tambahBaris(rincian, "Jenis kelamin", s.jenis_kelamin);
-  if (TAMPILKAN.tanggalLahir) tambahBaris(rincian, "Tanggal lahir", formatTanggal(s.tanggal_lahir));
-  if (TAMPILKAN.alamat) tambahBaris(rincian, "Alamat", s.alamat);
-  
+
+  if (s.role === "guru") {
+    tambahBaris(rincian, "Jurusan", s.jurusan || "Teknik Komputer Jaringan");
+    tambahBaris(rincian, "Mapel", s.mapel);
+  } else {
+    tambahBaris(rincian, "Kelas", s.kelas);
+    if (TAMPILKAN.jenisKelamin && s.jenis_kelamin) tambahBaris(rincian, "Jenis kelamin", s.jenis_kelamin);
+    if (TAMPILKAN.tanggalLahir && s.tanggal_lahir) tambahBaris(rincian, "Tanggal lahir", formatTanggal(s.tanggal_lahir));
+    if (TAMPILKAN.alamat && s.alamat) tambahBaris(rincian, "Alamat", s.alamat);
+  }
+
   isi.appendChild(rincian);
   kartu.appendChild(isi);
   return kartu;
@@ -213,7 +365,7 @@ function tambahBaris(dl, label, nilai) {
 }
 
 function inisial(nama) {
-  return nama.split(" ").filter(Boolean).slice(0, 2).map((k) => k[0].toUpperCase()).join("");
+  return (nama || "").split(" ").filter(Boolean).slice(0, 2).map((k) => k[0].toUpperCase()).join("");
 }
 
 function formatTanggal(teks) {
@@ -226,17 +378,106 @@ function tampilkanPesan(teks, galat) {
 }
 
 function isiPilihanKelas() {
-  const daftarKelas = [...new Set(semuaSiswa.map((s) => s.kelas).filter(Boolean))].sort();
-  daftarKelas.forEach((k) => {
+  const role = elRole ? elRole.value : "";
+  elKelas.replaceChildren();
+
+  const optDefault = el("option", "", role === "guru" ? "Semua Mapel" : (role === "siswa" ? "Semua Kelas" : "Semua Kelas / Mapel"));
+  optDefault.value = "";
+  elKelas.appendChild(optDefault);
+
+  let daftar = [];
+  if (role === "siswa") {
+    daftar = [...new Set(semuaSiswa.filter(s => s.role === "siswa").map(s => s.kelas).filter(Boolean))];
+  } else if (role === "guru") {
+    daftar = [...new Set(semuaSiswa.filter(s => s.role === "guru").map(s => s.mapel).filter(Boolean))];
+  } else {
+    const k = semuaSiswa.filter(s => s.role === "siswa").map(s => s.kelas).filter(Boolean);
+    const m = semuaSiswa.filter(s => s.role === "guru").map(s => s.mapel).filter(Boolean);
+    daftar = [...new Set([...k, ...m])];
+  }
+
+  daftar.sort().forEach((k) => {
     const opsi = el("option", "", k);
     opsi.value = k;
     elKelas.appendChild(opsi);
   });
 }
 
+function bukaModal() {
+  document.getElementById("modalForm").classList.add("aktif");
+}
+function tutupModal() {
+  document.getElementById("modalForm").classList.remove("aktif");
+  document.getElementById("formTambah").reset();
+  sesuaikanForm();
+}
+function sesuaikanForm() {
+  const role = document.getElementById("inputRole").value;
+  const formSiswa = document.getElementById("formSiswaKhusus");
+  const formGuru = document.getElementById("formGuruKhusus");
+  const lblId = document.getElementById("lblId");
+
+  if (role === "guru") {
+    formSiswa.style.display = "none";
+    formGuru.style.display = "block";
+    lblId.childNodes[0].textContent = "NIP ";
+  } else {
+    formSiswa.style.display = "block";
+    formGuru.style.display = "none";
+    lblId.childNodes[0].textContent = "NIS ";
+  }
+}
+
+document.getElementById("formTambah").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const role = document.getElementById("inputRole").value;
+  const nama = document.getElementById("inputNama").value.trim();
+  const idVal = document.getElementById("inputId").value.trim();
+  const foto = document.getElementById("inputFoto").value.trim() || null;
+
+  if (role === "siswa") {
+    const tgl = document.getElementById("inputTanggal").value;
+    const { error } = await db.from("siswa").insert([{
+      nis: idVal,
+      nama: nama,
+      kelas: document.getElementById("inputKelas").value.trim() || null,
+      jenis_kelamin: document.getElementById("inputJK").value,
+      tanggal_lahir: tgl ? tgl : null,
+      alamat: document.getElementById("inputAlamat").value.trim() || null,
+      foto_url: foto
+    }]);
+
+    if (error) {
+      alert("Gagal menambah siswa: " + error.message);
+      return;
+    }
+  } else {
+    const { error } = await db.from("guru").insert([{
+      nip: idVal,
+      nama: nama,
+      jurusan: document.getElementById("inputJurusan").value.trim() || null,
+      mapel: document.getElementById("inputMapel").value.trim() || null,
+      foto_url: foto
+    }]);
+
+    if (error) {
+      alert("Gagal menambah guru: " + error.message);
+      return;
+    }
+  }
+
+  alert("Data berhasil ditambahkan!");
+  tutupModal();
+  muatData();
+});
+
+elRole.addEventListener("change", () => {
+  isiPilihanKelas();
+  tampilkanSiswa();
+});
 elCari.addEventListener("input", tampilkanSiswa);
 elKelas.addEventListener("change", tampilkanSiswa);
 muatData();
 </script>
 </body>
-      </html>
+</html>
