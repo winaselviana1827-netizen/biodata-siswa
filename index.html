@@ -35,9 +35,10 @@ body {
   line-height: 1.5;
 }
 .wadah { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
 header h1 { margin: 0 0 4px; font-size: 1.75rem; font-weight: 800; }
 header p { margin: 0; color: var(--teks-redup); }
-  .btn-tambah {
+.btn-tambah {
   background: var(--aksen);
   color: #fff;
   border: none;
@@ -72,7 +73,7 @@ header p { margin: 0; color: var(--teks-redup); }
   border: 1px solid var(--garis);
   border-radius: 14px;
   overflow: hidden;
-  }
+}
 .pita { height: 56px; background: #7f52b0; }
 .isi { padding: 0 16px 16px; text-align: center; }
 .foto {
@@ -97,7 +98,8 @@ header p { margin: 0; color: var(--teks-redup); }
 .pesan { grid-column: 1 / -1; text-align: center; padding: 40px 16px; color: var(--teks-redup); }
 .pesan.galat { color: #b42318; }
 @media (prefers-color-scheme: dark) { .pesan.galat { color: #ff8b80; } }
-  .modal {
+
+.modal {
   display: none;
   position: fixed;
   inset: 0;
@@ -135,14 +137,15 @@ header p { margin: 0; color: var(--teks-redup); }
 <div class="wadah">
   <header>
     <div>
-    <h1>Teknik Komputer dan Jaringan</h1></h1>
-    <p>Cari berdasarkan role.</p>
+      <h1>Teknik Komputer dan Jaringan</h1>
+      <p>Cari berdasarkan role.</p>
     </div>
-    <button class="btn-tambah" onclick="bukanModal()">+ Tambah Data</button>button>
+    <button class="btn-tambah" onclick="bukaModal()">+ Tambah Data</button>
   </header>
-<div class="control">
+
+  <div class="kontrol">
     <input id="cari" type="search" placeholder="Cari nama atau NIS" aria-label="Cari nama atau NIS">
-    <select id="filterrole" aria-label="Filter role">
+    <select id="filterRole" aria-label="Filter role">
       <option value="">Semua (Guru / Siswa)</option>
       <option value="siswa">Siswa</option>
       <option value="guru">Guru</option>
@@ -236,7 +239,7 @@ const TAMPILKAN = {
   foto_url: true
 };
 
-  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const elDaftar = document.getElementById("daftar");
 const elJumlah = document.getElementById("jumlah");
@@ -249,7 +252,6 @@ async function muatData() {
   tampilkanPesan("Memuat data...");
   let gabungan = [];
 
-  // Menggunakan select("*") agar aman mengambil seluruh kolom yang ada
   const { data: dataSiswa, error: errSiswa } = await db
     .from("siswa")
     .select("*")
@@ -476,4 +478,4 @@ elKelas.addEventListener("change", tampilkanSiswa);
 muatData();
 </script>
 </body>
-</html>
+                                                                              </html>
