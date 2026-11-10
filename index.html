@@ -89,6 +89,14 @@ header p { margin: 0; color: var(--teks-redup); }
   color: #7f52b0;
   display: grid; place-items: center; font-weight: 800; font-size: 1.5rem; overflow: hidden;
   flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+/* KURSOR AKTIF SAAT FOTO BISA DIKLIK */
+.foto.bisa-diklik {
+  cursor: pointer;
+}
+.foto.bisa-diklik:hover {
+  transform: scale(1.08);
 }
 .foto img { width: 100%; height: 100%; object-fit: cover; }
 .nama { margin: 0; font-size: 1.05rem; font-weight: 800; }
@@ -154,6 +162,52 @@ header p { margin: 0; color: var(--teks-redup); }
 .modal-aksi { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
 .btn-batal { background: transparent; border: 1px solid var(--garis); color: var(--teks); padding: 8px 14px; border-radius: 8px; cursor: pointer; }
 .btn-simpan { background: var(--aksen); border: none; color: #fff; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+
+/* CSS UNTUK MODAL PEMBESAR FOTO */
+.modal-foto {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  place-items: center;
+  padding: 24px;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+}
+.modal-foto.aktif { display: grid; }
+.modal-foto-wrapper {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-foto-gambar {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  object-fit: contain;
+}
+.modal-foto-judul {
+  color: #ffffff;
+  margin-top: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-align: center;
+}
+.btn-tutup-foto {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+}
 </style>
 </head>
 <body>
@@ -252,6 +306,15 @@ header p { margin: 0; color: var(--teks-redup); }
   </div>
 </div>
 
+<!-- MODAL PEMBESAR FOTO -->
+<div id="modalFoto" class="modal-foto" onclick="tutupModalFoto(event)">
+  <div class="modal-foto-wrapper">
+    <button type="button" class="btn-tutup-foto" onclick="tutupModalFotoDirect()">&times;</button>
+    <img id="gambarBesar" class="modal-foto-gambar" src="" alt="Foto Besar">
+    <div id="judulFoto" class="modal-foto-judul"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 // --- KONFIGURASI SUPABASE ---
@@ -342,22 +405,23 @@ function buatKartu(s) {
 
   const foto = el("div", "foto");
   if (s.foto_url) {
+    foto.classList.add("bisa-diklik");
+    foto.title = "Klik untuk memperbesar foto";
+    foto.onclick = () => bukaModalFoto(s.foto_url, s.nama);
+
     const gambar = document.createElement("img");
     gambar.src = s.foto_url;
     gambar.alt = "Foto " + s.nama;
     gambar.loading = "lazy";
-    gambar.onerror = () => foto.replaceChildren(document.createTextNode(inisial(s.nama)));
+    gambar.onerror = () => {
+      foto.replaceChildren(document.createTextNode(inisial(s.nama)));
+      foto.classList.remove("bisa-diklik");
+      foto.onclick = null;
+    };
     foto.appendChild(gambar);
   } else {
     foto.textContent = inisial(s.nama);
   }
-  foto.title = "Klik untuk memperbesar foto";
-      foto.onclick = () => {
-        if (s.foto_url) {
-          fotoBesar.src = s.foto_url;
-          modalFoto.classList.add("aktif");
-    }
-  };
 
   isi.appendChild(foto);
   isi.appendChild(el("h2", "nama", s.nama));
@@ -390,6 +454,28 @@ function buatKartu(s) {
   kartu.appendChild(aksi);
 
   return kartu;
+}
+
+// FUNGSI UNTUK MODAL FOTO
+function bukaModalFoto(url, nama) {
+  const modalFoto = document.getElementById("modalFoto");
+  const gambarBesar = document.getElementById("gambarBesar");
+  const judulFoto = document.getElementById("judulFoto");
+
+  gambarBesar.src = url;
+  judulFoto.textContent = nama;
+  modalFoto.classList.add("aktif");
+}
+
+function tutupModalFoto(event) {
+  // Tutup jika area luar gambar diklik
+  if (event.target.id === "modalFoto") {
+    tutupModalFotoDirect();
+  }
+}
+
+function tutupModalFotoDirect() {
+  document.getElementById("modalFoto").classList.remove("aktif");
 }
 
 function el(tag, kelas, teks) {
@@ -542,51 +628,4 @@ document.getElementById("formTambah").addEventListener("submit", async (e) => {
       jurusan: document.getElementById("inputJurusan").value.trim() || null,
       mapel: document.getElementById("inputMapel").value.trim() || null,
       foto_url: foto
-    };
-
-    if (mode === "tambah") {
-      const { error } = await db.from("guru").insert([payload]);
-      if (error) { alert("Gagal menambah guru: " + error.message); return; }
-    } else {
-      const { error } = await db.from("guru").update(payload).eq("nip", oldId);
-      if (error) { alert("Gagal memperbarui guru: " + error.message); return; }
     }
-  }
-
-  alert("Data berhasil " + (mode === "tambah" ? "ditambahkan" : "diperbarui") + "!");
-  tutupModal();
-  muatData();
-});
-
-async function hapusData(s) {
-  const konfirmasi = confirm(`Apakah Anda yakin ingin menghapus ${s.nama}?`);
-  if (!konfirmasi) return;
-
-  if (s.role === "siswa") {
-    const { error } = await db.from("siswa").delete().eq("nis", s.nis);
-    if (error) {
-      alert("Gagal menghapus siswa: " + error.message);
-      return;
-    }
-  } else {
-    const { error } = await db.from("guru").delete().eq("nip", s.nip);
-    if (error) {
-      alert("Gagal menghapus guru: " + error.message);
-      return;
-    }
-  }
-
-  alert("Data berhasil dihapus!");
-  muatData();
-}
-
-elRole.addEventListener("change", () => {
-  isiPilihanKelas();
-  tampilkanSiswa();
-});
-elCari.addEventListener("input", tampilkanSiswa);
-elKelas.addEventListener("change", tampilkanSiswa);
-muatData();
-</script>
-</body>
-  </html>
