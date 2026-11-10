@@ -351,6 +351,13 @@ function buatKartu(s) {
   } else {
     foto.textContent = inisial(s.nama);
   }
+  foto.title = "Klik untuk memperbesar foto";
+      foto.onclick = () => {
+        if (s.foto_url) {
+          fotoBesar.src = s.foto_url;
+          modalFoto.classList.add("aktif");
+    }
+  };
 
   isi.appendChild(foto);
   isi.appendChild(el("h2", "nama", s.nama));
